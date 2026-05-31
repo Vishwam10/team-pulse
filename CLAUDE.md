@@ -73,6 +73,8 @@ README.md          Project overview, architecture diagram, services table
 CLAUDE.md          This file
 config.json        Sheet ID, Slack channel, Google Chat webhook, Apps Script URL+secret, atlassian_base_url, thresholds, in_progress_statuses, queued_status_groups
 team.json          Identity map: {name, github_login, jira_account_id} per teammate
+config.example.json  Committed placeholder template — copy to config.json and fill in (real config.json is git-ignored)
+team.example.json    Committed placeholder template — copy to team.json and fill in (real team.json is git-ignored)
 apps-script.gs     Source of the deployed Apps Script (paste into Extensions → Apps Script in the sheet)
 digest.md          The prompt — the executable
 render_cards.py    Deterministic Google Chat card renderer + poster (digest Step 7 writes a content JSON, then runs this)
@@ -80,8 +82,9 @@ run-digest.sh      Wrapper launchd runs: invokes claude -p, writes the per-day l
 com.chronus.teampulse.plist   launchd LaunchAgent (12:05 IST); canonical copy, deployed to ~/Library/LaunchAgents/
 RUNBOOK.md         How to activate & operate the automation
 SETUP-CHECKLIST.md Go-live checklist (settings.json, launchd, webhook)
-logs/              Per-day run logs (YYYY-MM-DD.log); git-ignored (contains names)
+logs/              Per-day run logs (YYYY-MM-DD.log; git-ignored, contains names) + example-run.log.txt (committed, sanitized sample of one run)
 .claude/settings.json   Permission allowlist so the headless run never blocks on a prompt
+.gitignore         Keeps config.json, team.json, and *.log out of git (the .example.json files are the committed stand-ins)
 ```
 
 No `~/.claude/team-pulse/`, no `~/.team-pulse/`, no SQLite. Everything lives in this directory.
@@ -90,7 +93,7 @@ No `~/.claude/team-pulse/`, no `~/.team-pulse/`, no SQLite. Everything lives in 
 
 - **No PII in `digest.md`.** Names, emails, GitHub logins, account IDs, channel IDs, project keys all live in `config.json` / `team.json`. The prompt is a generic template — do not hardcode identifiers.
 - **Sheet column order = `team.json` array order.** When growing the team: add a `team.json` entry *and* add a sheet column header in the same position.
-- **`apps_script.url` + `apps_script.secret` and `gchat_webhook_url` are credentials.** Treat like passwords (the Chat webhook URL embeds a `key` + `token`). Don't commit `config.json` to a public repo.
+- **`apps_script.url` + `apps_script.secret` and `gchat_webhook_url` are credentials.** Treat like passwords (the Chat webhook URL embeds a `key` + `token`). `config.json` and `team.json` are git-ignored — never commit the real files; the `.example.json` templates are the committed stand-ins.
 - **Threshold tuning is in `config.json.thresholds`; status names in `config.json.in_progress_statuses` (active) and `config.json.queued_status_groups` (the not-started / in-QA / delivered split).** Never edit these in the prompt.
 - **Narrative tone is descriptive, not judgmental.** "Quiet yesterday — worth a check-in" ✅. "Underperforming" ❌. The audit conclusion is the SM's, not the tool's.
 - **Apps Script re-deploys MUST update the existing deployment** (Manage deployments → pencil → New version), never "New deployment". Otherwise the live URL serves stale code.

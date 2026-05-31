@@ -119,6 +119,10 @@ Date cell) that makes the briefing scannable. So Team Pulse uses a small
 `node` (via nvm), `jq`, `python3`, `curl`.
 
 **Configuration** (must be populated — the digest aborts on any `<FILL IN…>`):
+A fresh clone ships [`config.example.json`](config.example.json) and
+[`team.example.json`](team.example.json) (the real files are git-ignored).
+**Copy each to its real name and fill it in:** `cp config.example.json config.json`,
+`cp team.example.json team.json`.
 - [`config.json`](config.json) — sheet ID, Slack channel, **Google Chat webhook**,
   Apps Script URL + secret, Jira project key, GitHub org, Atlassian base URL,
   `in_progress_statuses`, `queued_status_groups`, thresholds. *(Treat the Apps
@@ -154,6 +158,7 @@ and troubleshooting steps are in **[`RUNBOOK.md`](RUNBOOK.md)**.
 | [`digest.md`](digest.md) | **The executable** — the 9-step prompt the agent runs. |
 | [`config.json`](config.json) | All IDs, URLs, the Apps Script secret, and thresholds. |
 | [`team.json`](team.json) | Teammate identity map (= sheet column order). |
+| [`config.example.json`](config.example.json) · [`team.example.json`](team.example.json) | Committed placeholder templates — copy to `config.json` / `team.json` and fill in. |
 | [`apps-script.gs`](apps-script.gs) | Source of the sheet-bound Apps Script (`doPost`/`doGet`). |
 | [`run-digest.sh`](run-digest.sh) | Wrapper launchd runs; writes the per-day log. |
 | [`render_cards.py`](render_cards.py) | Deterministic Google Chat card renderer + poster (digest Step 7 calls it). |
@@ -164,6 +169,7 @@ and troubleshooting steps are in **[`RUNBOOK.md`](RUNBOOK.md)**.
 | [`RUNBOOK.md`](RUNBOOK.md) | How to activate & operate the automation. |
 | [`SETUP-CHECKLIST.md`](SETUP-CHECKLIST.md) | Go-live checklist (allowlist, launchd, webhook). |
 | `.claude/settings.json` | Permission allowlist so the headless run never prompts. |
+| `.gitignore` | Keeps `config.json`, `team.json`, and `*.log` out of git; the `.example.json` files are the committed stand-ins. |
 
 ---
 

@@ -22,8 +22,9 @@ launchd (macOS, always-on)
 |---|---|
 | `run-digest.sh` | Wrapper launchd executes. Runs `claude -p`, writes the per-day log. |
 | `com.chronus.teampulse.plist` | LaunchAgent definition (canonical copy; gets copied to `~/Library/LaunchAgents/`). |
-| `logs/YYYY-MM-DD.log` | **One file per day.** Each run appends a timestamped block (re-runs stack). |
+| `logs/YYYY-MM-DD.log` | **One file per day.** Each run appends a timestamped block (re-runs stack). Git-ignored (contains names). |
 | `logs/launchd.log` | launchd-level catch-all for failures before the wrapper can log. |
+| `logs/example-run.log.txt` | Committed, **sanitized** sample of one run (names/IDs fictional) — what a healthy log looks like. |
 | `.claude/settings.json` | Permission allowlist so the headless run never blocks on a prompt. |
 
 ## One-time activation
