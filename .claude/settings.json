@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "ToolSearch",
+      "Bash(curl *)",
+      "Bash(jq *)",
+      "Bash(python3 *)",
+      "Bash(date *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(mkdir *)",
+      "Bash(wc *)",
+      "Bash(head *)",
+      "mcp__plugin_atlassian_atlassian__getAccessibleAtlassianResources",
+      "mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql",
+      "mcp__plugin_atlassian_atlassian__getJiraIssue",
+      "mcp__plugin_atlassian_atlassian__searchConfluenceUsingCql",
+      "mcp__github__search_pull_requests",
+      "mcp__github__search_commits",
+      "mcp__github__search_issues",
+      "mcp__github__pull_request_read",
+      "mcp__claude_ai_Slack__slack_send_message",
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "mcp__github__search_repositories",
+      "mcp__github__get_me",
+      "mcp__github__list_commits"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+# Team Pulse — keep secrets, PII, and local state out of git.
+# (Single-user tool; see CLAUDE.md "Hard rules" + "Privacy Posture".)
+
+# ── Secrets & PII — the REAL configs live only on your machine ──────────────
+#   config.json : Apps Script secret + URL, Google Chat webhook (key+token), IDs
+#   team.json   : teammate PII (names, GitHub logins, Jira account IDs)
+# Commit the *.example.json templates instead → copy to the real name and fill in.
+config.json
+team.json
+
+# ── Per-day run logs (contain names + ticket/PR content) ────────────────────
+*.log
+
+# ── Claude Code local / session state (machine-specific, not shared) ────────
+.claude/settings.local.json
+.claude/scheduled_tasks.json
+.claude/scheduled_tasks.lock
+.claude/projects/
+.claude/todos/
+.claude/shell-snapshots/
+
+# ── OS / editor cruft ───────────────────────────────────────────────────────
+.DS_Store
+*.swp
+*~

@@ -1,0 +1,49 @@
+# ───────────────────────────────────────────────────────────────────────────
+# EXAMPLE log — what logs/YYYY-MM-DD.log looks like after one daily run.
+#
+# SANITIZED: the names, ticket IDs, PR numbers, repos, host, user, and the
+# Google Chat space id below are all FICTIONAL. Real logs are git-ignored
+# (*.log) because they contain teammate PII — see the root .gitignore.
+#
+# Every line is:  [HH:MM:SS][PID] <detail>
+#   HH:MM:SS = wall-clock time the line was emitted (the date is in the filename)
+#   PID      = the run-digest.sh process id — a stable id for the whole run
+# The agent's own stdout is streamed through the same prefixer, so the entire
+# file is one uniform timestamped stream. One file per calendar day, APPENDED
+# per run (so multiple runs in a day stack as separate START…FINISHED blocks).
+# ───────────────────────────────────────────────────────────────────────────
+[12:05:00][12345] ════════════════════════════════════════════════════════════════
+[12:05:00][12345] ▶ RUN STARTED  host=example-mac  user=user  pwd=/Users/user/projects/teamPulse
+[12:05:00][12345]   claude=2.1.156 (Claude Code)
+[12:05:00][12345] ────────────────────────────────────────────────────────────────
+[12:06:12][12345] ✓ Step 0 — configs loaded (2 teammates)
+[12:06:19][12345] ✓ Step 0.5 — Atlassian preflight OK
+[12:13:40][12345] ✓ Step 1 — gathered Jira + GitHub · Confluence 403
+[12:13:58][12345] ✓ Step 2 — signals computed
+[12:15:20][12345] ✓ Step 3-4 — per-person + team narratives synthesized
+[12:15:41][12345] ✓ Step 5 — row POSTed (BEFORE=41)
+[12:16:15][12345] ✓ Step 6 — verified row 42
+[12:17:22][12345] ✓ Step 7 — delivered 4 cards to Google Chat
+[12:17:22][12345] ✓ Step 8 — done
+[12:17:30][12345] **Step 8 — Final report**
+[12:17:30][12345]
+[12:17:30][12345] Digest written: row 42 at 2026-01-15T06:35:02Z, sent to Google Chat space AAAAexample00 (4 cards threaded).
+[12:17:30][12345]
+[12:17:30][12345] ---
+[12:17:30][12345]
+[12:17:30][12345] **Summary of this run:**
+[12:17:30][12345]
+[12:17:30][12345] | Signal | Alex Rivera | Sam Carter |
+[12:17:30][12345] |---|---|---|
+[12:17:30][12345] | 🔴 Overloaded | 5 active ≥ 3 | 4 active ≥ 3 |
+[12:17:30][12345] | 🔴 Jira idle | 2 tickets (18d, 6d) | none |
+[12:17:30][12345] | 🔴 PR no reviews | 4 of 6 PRs | 2 of 3 PRs |
+[12:17:30][12345] | 🔴 PR author unresponsive | — | #128, Alex reviewed Wed |
+[12:17:30][12345] | ✅ PRs merged 7d | 5 | 3 |
+[12:17:30][12345] | ✅ Reviews given 7d | 3 | 4 |
+[12:17:30][12345] | ℹ️ Confluence | 403 (no seat) | 403 (no seat) |
+[12:17:30][12345]
+[12:17:30][12345] Key action for standup: PROJ-1234 at 18 days idle needs triage; a review swap clears the open PR queue.
+[12:17:31][12345] ────────────────────────────────────────────────────────────────
+[12:17:31][12345] ✅ RUN FINISHED OK   (exit 0, 751s)
+[12:17:31][12345] ════════════════════════════════════════════════════════════════

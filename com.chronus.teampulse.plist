@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Team Pulse daily digest — launchd LaunchAgent.
+
+  Canonical copy lives in the project; activate by copying to
+  ~/Library/LaunchAgents/ and bootstrapping (see RUNBOOK.md).
+
+  Runs run-digest.sh at 12:05 local time (IST) every day. The explicit PATH is
+  REQUIRED: launchd does not load your shell profile, so nvm's node and
+  Homebrew's python3 are invisible without it.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.chronus.teampulse</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/vishwam/projects/teamPulse/run-digest.sh</string>
+  </array>
+
+  <!-- Fire at 12:05 IST daily (ahead of the 12:30 standup, leaving headroom for the ~15-30 min run).
+       To restrict to weekdays, replace this dict with an <array> of dicts
+       each adding <key>Weekday</key><integer>N</integer> for N = 1..5. -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>12</integer>
+    <key>Minute</key>
+    <integer>5</integer>
+  </dict>
+
+  <!-- nvm node + Homebrew python3 + claude + system bins. -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/vishwam/.local/bin:/Users/vishwam/.nvm/versions/node/v20.20.1/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/vishwam/projects/teamPulse</string>
+
+  <!-- launchd-level catch-all: captures failures that happen BEFORE the
+       wrapper can write its own per-day log (e.g. wrapper not executable).
+       The real run output goes to logs/YYYY-MM-DD.log via the wrapper. -->
+  <key>StandardOutPath</key>
+  <string>/Users/vishwam/projects/teamPulse/logs/launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/vishwam/projects/teamPulse/logs/launchd.log</string>
+
+  <!-- Do not fire on load/login — only on the schedule. -->
+  <key>RunAtLoad</key>
+  <false/>
+</dict>
+</plist>

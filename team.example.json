@@ -1,0 +1,12 @@
+[
+  {
+    "name": "<FILL IN: Full Name>",
+    "github_login": "<FILL IN: github-handle>",
+    "jira_account_id": "<FILL IN: Jira accountId (24-hex)>"
+  },
+  {
+    "name": "<FILL IN: Full Name>",
+    "github_login": "<FILL IN: github-handle>",
+    "jira_account_id": "<FILL IN: Jira accountId (24-hex)>"
+  }
+]

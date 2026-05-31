@@ -1,0 +1,40 @@
+{
+  "_comment": "Template for config.json (which is git-ignored). Copy to config.json and fill in the <FILL IN ...> values. Secrets/IDs are placeholders; the structural tuning below is sensible defaults. Any remaining <FILL IN trips the digest's Step 0 abort guard, so an unfilled config won't run.",
+
+  "sheet_id": "<FILL IN: Google Sheet ID (the .../d/<THIS>/edit part)>",
+  "slack_channel": "<FILL IN: Slack channel ID — fallback delivery only>",
+  "gchat_webhook_url": "<FILL IN: Google Chat incoming-webhook URL (primary delivery; embeds key+token — secret)>",
+  "apps_script": {
+    "url": "<FILL IN: deployed Apps Script web-app /exec URL>",
+    "secret": "<FILL IN: shared secret gating the web app — treat as a password>"
+  },
+
+  "jira_project_key": "<FILL IN: e.g. AP>",
+  "github_org": "<FILL IN: e.g. YourOrg>",
+  "atlassian_base_url": "<FILL IN: e.g. https://yourorg.atlassian.net>",
+
+  "in_progress_statuses": ["In Progress", "In Review", "Code Review"],
+  "queued_status_groups": {
+    "not_started": ["Open", "Planned", "Tier 1 Review", "To Do", "Backlog", "Selected for Development"],
+    "in_qa": ["QA In Progress", "QA Signoff", "In QA"],
+    "delivered": ["Delivered"]
+  },
+
+  "llm": {
+    "model": "claude-sonnet-4-6",
+    "effort": "medium",
+    "max_tokens": 5000
+  },
+
+  "thresholds": {
+    "jira_idle_working_days": 4,
+    "pr_no_reviews_hours": 36,
+    "pr_author_unresponsive_hours": 24,
+    "pr_reviewer_unresponsive_hours": 36,
+    "overloaded_in_progress_count": 3,
+    "stalled_draft_pr_days": 3,
+    "underloaded_max_in_flight": 1,
+    "underloaded_max_shipped_7d": 1,
+    "silent_no_activity_hours": 24
+  }
+}
