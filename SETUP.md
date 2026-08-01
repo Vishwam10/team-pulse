@@ -433,3 +433,62 @@ Don't trust it unattended until all five hold:
 **The escape hatch:** if laptop availability keeps being the failure mode, the same
 `run-digest.sh` moves to an always-on box (Pi / mini / VPS) under plain `cron`
 with no code change — only the paths in §7.
+
+---
+
+## Appendix A — Rebuilding the Google side from zero
+
+§1–§11 assume the sheet, Apps Script, and Chat Space still exist (they survive a
+laptop format). Use this **only** if that cloud state is genuinely gone — a deleted
+sheet, a new Google account, or standing the whole thing up for a second team.
+
+### A1. The sheet
+
+Create a new Google Sheet, then lay out **row 1** exactly like this — column A is
+the date, and columns B onward are teammates **in `team.json` array order**:
+
+| A | B | C | D | E |
+|---|---|---|---|---|
+| `Date` | *teammate 1 name* | *teammate 2 name* | *teammate 3 name* | *teammate 4 name* |
+
+Take `sheet_id` from the URL (`/d/`**`<THIS>`**`/edit`) into `config.json`.
+
+> This header row is also the **recovery source** for `team.json` ordering — if you
+> ever lose `team.json`, read the order back off row 1 rather than guessing. Column
+> count must equal `team.json` length; a mismatch mis-attributes each briefing to
+> the wrong person, silently.
+
+### A2. The Apps Script
+
+1. In that sheet: **Extensions → Apps Script**
+2. Paste all of [`apps-script.gs`](apps-script.gs) into `Code.gs`, replacing the stub
+3. **Project Settings → Script Properties → Add property**: name `SECRET`, value a
+   long random string — put the *same* string in `config.json` as `apps_script.secret`
+4. **Deploy → New deployment → Web app**, with:
+   - *Execute as:* **Me** (runs as your identity — this is why no service account is needed)
+   - *Who has access:* **Anyone** (the `SECRET` is what actually gates it)
+5. Copy the `/exec` URL into `config.json` as `apps_script.url`
+
+Verify with the read-only check in §8 — expect `{"ok":true,"last_row":1}` on a
+fresh sheet (just the header row).
+
+> From here on, **every** re-deploy must be **Manage deployments → pencil → Version:
+> New version → Deploy**. "New deployment" mints a new URL and the live one keeps
+> serving stale code.
+
+### A3. The Chat Space + webhook
+
+1. Google Chat → create the Space the digest posts into
+2. **Space settings → Apps & integrations → Webhooks → Add webhook**, name it "Team Pulse"
+3. Copy the URL into `config.json` as `gchat_webhook_url` (it embeds a `key` +
+   `token` — treat it as a password)
+
+### A4. Identity map
+
+Fill `team.json` from [`team.example.json`](team.example.json) — one entry per
+teammate, **in the same order as the sheet's columns**. Get `jira_account_id` values
+via the Atlassian MCP (`lookupJiraAccountId`) and `github_login` from the GitHub org
+member list.
+
+Slack (`slack_channel`) is optional — it's only the fallback sink used when
+`gchat_webhook_url` is empty.
