@@ -115,6 +115,10 @@ Date cell) that makes the briefing scannable. So Team Pulse uses a small
 
 ## What you need to run it
 
+> **Setting up on a new machine?** Follow **[`SETUP.md`](SETUP.md)** — a complete,
+> ordered rebuild guide (toolchain → plugins → auth → configs → scheduler),
+> including the two git-ignored files you must back up *before* wiping a Mac.
+
 **Binaries** (already present on the pilot Mac): `claude` (Claude Code CLI),
 `node` (via nvm), `jq`, `python3`, `curl`.
 
@@ -167,7 +171,8 @@ and troubleshooting steps are in **[`RUNBOOK.md`](RUNBOOK.md)**.
 | [`CLAUDE.md`](CLAUDE.md) | Operating contract, hard rules, current vs. original design. |
 | [`design.md`](design.md) | Original spec / rationale (source of "why"). |
 | [`RUNBOOK.md`](RUNBOOK.md) | How to activate & operate the automation. |
-| [`SETUP-CHECKLIST.md`](SETUP-CHECKLIST.md) | Go-live checklist (allowlist, launchd, webhook). |
+| [`SETUP.md`](SETUP.md) | **Fresh-machine rebuild guide** — full setup from a formatted Mac. |
+| [`SETUP-CHECKLIST.md`](SETUP-CHECKLIST.md) | Original go-live checklist (historical record of the first activation). |
 | `.claude/settings.json` | Permission allowlist so the headless run never prompts. |
 | `.gitignore` | Keeps `config.json`, `team.json`, and `*.log` out of git; the `.example.json` files are the committed stand-ins. |
 

@@ -1,5 +1,9 @@
 # Team Pulse — Go-Live Checklist
 
+> **Historical record** of the first activation on the pilot Mac — kept for the
+> decisions and gotchas it captures. To set up on a **new machine**, use
+> **[`SETUP.md`](SETUP.md)** instead; for day-to-day ops, [`RUNBOOK.md`](RUNBOOK.md).
+
 Getting the digest running **unattended** (no open Claude Code session). Work top
 to bottom. Detailed ops live in [`RUNBOOK.md`](RUNBOOK.md); this is the action list.
 

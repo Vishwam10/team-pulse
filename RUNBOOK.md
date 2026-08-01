@@ -29,6 +29,11 @@ launchd (macOS, always-on)
 
 ## One-time activation
 
+> On a **brand-new / reformatted machine**, do the full rebuild in
+> [`SETUP.md`](SETUP.md) first (toolchain, plugins, Atlassian auth, restoring the
+> git-ignored `config.json` / `team.json`, fixing hardcoded paths). The steps below
+> assume that groundwork is already in place.
+
 ```bash
 # 1. Make the wrapper executable
 chmod +x /Users/vishwam/projects/teamPulse/run-digest.sh
