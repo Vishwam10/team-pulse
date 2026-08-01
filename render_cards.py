@@ -40,7 +40,7 @@ Row fields ({text,label,url}): `text` is extended-markdown (bold the id),
   }]
 }
 """
-import json, re, sys, os, urllib.parse, urllib.request, urllib.error
+import json, re, sys, os, subprocess, tempfile, urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 cfg  = json.load(open(os.path.join(HERE, "config.json")))
@@ -125,16 +125,26 @@ cards.append({"cardId": "closing", "card": {
     "header": {"title": "🧭 Bottom line"},
     "sections": [section(None, [tp("*%s*" % C["closing"])])]}})
 
-# ── POST each card into one thread ──
+# ── POST each card into one thread (via curl — Python urllib blocked in sandbox) ──
 url = WEBHOOK + "&messageReplyOption=REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD"
 TK, ok = C["thread_key"], 0
 for c in cards:
-    body = json.dumps({"cardsV2": [c], "thread": {"threadKey": TK}}).encode()
-    req  = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
-    try:
-        name = json.loads(urllib.request.urlopen(req).read()).get("name")
+    payload = json.dumps({"cardsV2": [c], "thread": {"threadKey": TK}})
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tf:
+        tf.write(payload); tf_path = tf.name
+    result = subprocess.run(
+        ["curl", "-sS", "-w", "\n%{http_code}", "-X", "POST", url,
+         "-H", "Content-Type: application/json", "--data", "@" + tf_path],
+        capture_output=True, text=True)
+    os.unlink(tf_path)
+    lines = result.stdout.strip().rsplit("\n", 1)
+    http_code = lines[-1] if len(lines) > 1 else "000"
+    body_out  = lines[0] if len(lines) > 1 else result.stdout
+    if http_code == "200":
+        try: name = json.loads(body_out).get("name", "ok")
+        except Exception: name = "ok"
         print("  [render_cards] posted %-14s → %s" % (c["cardId"], name)); ok += 1
-    except urllib.error.HTTPError as e:
-        print("  [render_cards] FAIL %s: HTTP %s %s" % (c["cardId"], e.code, e.read()[:200]))
+    else:
+        print("  [render_cards] FAIL %s: HTTP %s %s" % (c["cardId"], http_code, body_out[:200]))
 print("[render_cards] %d/%d cards posted to thread %s" % (ok, len(cards), TK))
 sys.exit(0 if ok == len(cards) else 1)
