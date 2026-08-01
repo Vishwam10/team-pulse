@@ -120,8 +120,12 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ```bash
 claude --version                 # expect 2.1.x or newer
-claude                           # then log in when prompted; /exit
+claude auth login                # opens a browser
+claude auth status               # must print "loggedIn": true
 ```
+
+⚠️ `claude --version` succeeds even when logged out — it is **not** an auth check.
+Details and failure modes: **[Appendix B1](#b1-claude-code-login--the-runtime)**.
 
 **Also confirm your global rules came back** — `~/.claude/CLAUDE.md` is *outside*
 this repo (restore it from the §0 backup). It carries your "no co-author line in
@@ -152,7 +156,8 @@ claude plugin install github@claude-plugins-official
 ```
 
 **Then authenticate Atlassian once, interactively** (OAuth — this is the step that
-cannot be automated, and the one that lapses over time):
+cannot be automated, and the one that lapses over time; full detail in
+**[Appendix B2](#b2-atlassian-oauth--the-jira-data-source)**):
 
 In a Claude Code session, invoke `mcp__plugin_atlassian_atlassian__authenticate`
 and complete the browser flow. Verify:
@@ -416,6 +421,11 @@ Don't trust it unattended until all five hold:
 
 ## 12. Troubleshooting a fresh install
 
+> **Suspect authentication?** Go straight to
+> **[Appendix B](#appendix-b--the-two-interactive-authentications)** — it covers the
+> two interactive logins, how to verify each, and why an auth abort can appear to
+> produce *no message at all*.
+
 | Symptom | Cause / fix |
 |---|---|
 | Nothing at noon; `logs/launchd.log` says `node: command not found` | plist `PATH` has a stale nvm version (§7) |
@@ -492,3 +502,110 @@ member list.
 
 Slack (`slack_channel`) is optional — it's only the fallback sink used when
 `gchat_webhook_url` is empty.
+
+---
+
+## Appendix B — The two interactive authentications
+
+Everything else in this guide is a file to copy or a command to run. **These two are
+browser flows that cannot be scripted, cannot be restored from a backup, and cannot
+be verified by any file you own.** They're also the most common reason a fresh setup
+looks finished but the first run produces nothing useful — so if setup gets
+complicated, start debugging here.
+
+### B1. Claude Code login — the runtime
+
+Without it `claude -p` can't start at all, so the digest dies before it even reads
+`digest.md`.
+
+```bash
+claude auth login      # opens a browser
+claude auth status     # verify
+```
+
+Healthy `claude auth status` prints JSON containing `"loggedIn": true`, an
+`authMethod`, your account email, and the org/subscription. Anything else — or a
+prompt to log in — means the scheduled run will fail too.
+
+Three things worth knowing:
+
+- **`claude --version` is NOT an auth check.** It happily prints a version while
+  logged out. `run-digest.sh` logs the version in its header, so a log can show a
+  healthy-looking `claude=2.1.x` line and still have failed on auth. Use
+  `claude auth status`.
+- **launchd needs no separate login.** It runs `run-digest.sh` as *your* user, so it
+  reuses the same stored credentials. (What it *doesn't* inherit is your shell
+  profile — hence the explicit `PATH` in the plist, §7.)
+- **If the scheduled run fails auth but an interactive session works,** mint a
+  long-lived token with `claude setup-token` (requires a Claude subscription).
+
+`claude doctor` gives a broader installation health check.
+
+### B2. Atlassian OAuth — the Jira data source
+
+The Atlassian MCP **hides its query tools behind OAuth**: until you authenticate, the
+server exposes only `authenticate` and `complete_authentication`. The token persists
+across runs but can be invalidated by org policy or revocation — so expect to redo
+this *occasionally*, not once.
+
+**Do it:** in a Claude Code session, invoke
+`mcp__plugin_atlassian_atlassian__authenticate`, open the URL it returns, authorize,
+and complete the flow if prompted.
+
+**Verify it** — either is conclusive:
+
+```
+Ask Claude: "Call getAccessibleAtlassianResources and show me the cloud id."
+```
+
+or run `ToolSearch` with `+atlassian` and confirm the *query* tools
+(`searchJiraIssuesUsingJql`, `getJiraIssue`) are listed — not just the two auth tools.
+
+**How it fails:** `digest.md` Step 0.5 runs exactly that check and **aborts before
+Step 1** rather than emitting a digest with Jira silently missing. The log line is
+`✓ Step 0.5 — needs re-auth → aborting`.
+
+> **`Confluence 403` is not an auth failure.** The account has no Confluence seat;
+> `confluence_edits_7d` is permanently `unavailable` and Step 1 soft-fails it by
+> design. A healthy run logs `✓ Step 1 — gathered Jira + GitHub · Confluence 403`.
+
+### B3. ⚠️ Where the failure message actually goes
+
+**This is the trap during a fresh setup.** Delivery migrated to Google Chat, but
+every abort/alert path in `digest.md` — Step 0, Step 0.5, and Error handling — still
+posts to **Slack** (`cfg.slack_channel`). `CLAUDE.md` tracks this as a pending
+tidy-up. Consequences:
+
+- Watching only the Chat Space, an auth abort looks like **nothing happened at all**.
+- On a new machine where the Slack MCP isn't connected yet, the alert posts
+  **nowhere** — it's swallowed entirely.
+
+**So the per-day log is the only guaranteed signal.** Make this your first move on
+any suspected auth problem:
+
+```bash
+grep -E "Step 0|Step 0.5|aborted|RUN FAILED|RUN FINISHED" logs/$(date '+%Y-%m-%d').log
+tail -40 logs/$(date '+%Y-%m-%d').log
+```
+
+Read it by how far the markers get:
+
+| Log shows | Meaning |
+|---|---|
+| No log file / no `RUN STARTED` | launchd never fired, or wrapper not executable — §12, not auth |
+| `RUN STARTED` then nothing, `RUN FAILED` fast | **Claude Code login** (B1) — the agent never started |
+| `✓ Step 0` but no `Step 0.5` line | Config load passed; preflight is where it stopped — check Atlassian (B2) |
+| `✓ Step 0.5 — needs re-auth → aborting` | **Atlassian OAuth** (B2), diagnosed by the digest itself |
+| `✓ Step 0.5 — Atlassian preflight OK` | Both auths are fine — any later failure is not auth |
+
+### B4. Auth symptom reference
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `RUN FAILED` seconds after start, no Step markers | Claude Code logged out | `claude auth login`, confirm `claude auth status` |
+| Interactive runs fine, scheduled run fails auth | Credentials not readable in the launchd context | `claude setup-token` |
+| Only `authenticate` / `complete_authentication` on the Atlassian server | Never authenticated, or token revoked | Re-run `authenticate` (B2) |
+| Digest ran but every teammate shows no Jira activity | Authenticated to the wrong Atlassian account/site | Check `getAccessibleAtlassianResources` matches `atlassian_base_url` |
+| Abort expected but no message anywhere | Alerts go to Slack, not Chat (B3) | Read the log; connect Slack MCP if you want alerts delivered |
+| `Confluence 403` | No Confluence seat | Expected — ignore |
+| Run far slower than ~35 min | GitHub MCP not allowlisted → `gh` CLI fallback | §7 allowlist fix; keep `gh auth login` done |

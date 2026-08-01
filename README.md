@@ -139,6 +139,32 @@ A fresh clone ships [`config.example.json`](config.example.json) and
 - A **Google Chat incoming webhook** URL in `config.json` (`gchat_webhook_url`) for delivery. (Slack MCP is only needed for the fallback path.)
 - The Apps Script web app — deployed and reachable at the URL in `config.json`.
 
+### The two logins nothing can restore for you
+
+Config files can be copied and secrets can be re-read out of Google — but **two
+authentications are interactive browser flows** with no file to back up. They're the
+usual reason a fresh install looks complete yet the first run yields nothing:
+
+| Auth | Verify it | How it fails |
+|---|---|---|
+| **Claude Code login** — the runtime itself | `claude auth status` → `"loggedIn": true` | `claude -p` never starts, so the log shows `RUN STARTED` then `RUN FAILED` with no Step markers. Note `claude --version` succeeds while logged out, so the version line in the log header proves nothing. |
+| **Atlassian OAuth** — the Jira data source | Call `getAccessibleAtlassianResources`, or check that `searchJiraIssuesUsingJql` is visible (not just `authenticate`) | `digest.md` Step 0.5 detects it and **aborts before Step 1** rather than shipping a digest with Jira missing: `✓ Step 0.5 — needs re-auth → aborting`. |
+
+⚠️ **Where the alert goes is the trap.** Delivery moved to Google Chat, but every
+abort path (Steps 0, 0.5, Error handling) still posts to **Slack** — so if you're
+watching only the Chat Space, an auth abort looks like *nothing ran*, and on a
+machine where the Slack MCP isn't connected yet it's swallowed entirely. **The
+per-day log is the only guaranteed signal:**
+
+```bash
+grep -E "Step 0|Step 0.5|aborted|RUN FAILED|RUN FINISHED" logs/$(date '+%Y-%m-%d').log
+```
+
+`✓ Step 0.5 — Atlassian preflight OK` means both auths are healthy and any later
+failure is *not* auth. (`Confluence 403` is expected — no seat, soft-failed by
+design.) Full walkthrough, symptom tables, and the `claude setup-token` route for
+headless credential problems: **[`SETUP.md` Appendix B](SETUP.md#appendix-b--the-two-interactive-authentications)**.
+
 ---
 
 ## Running it
