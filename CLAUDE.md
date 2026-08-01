@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Status
 
-**Pilot active.** A macOS **launchd** LaunchAgent (`com.chronus.teampulse`, daily 12:05 PM IST → `run-digest.sh` → `claude -p`) runs the digest ~25 minutes before the user's 12:30 PM scrum standup (headroom for the run) — with no Claude Code session open. This replaced the original in-REPL `CronCreate` job `01e22275` (now retired: it required an open REPL and auto-expired after 7 days). The 3-day pilot validates with 2 teammates (Vishwam + Kedar) in `team.json` before expanding to 8. See `README.md` for the overview and `RUNBOOK.md` for operating the automation.
+**Pilot active.** A macOS **launchd** LaunchAgent (`com.chronus.teampulse`, daily 12:05 PM IST → `run-digest.sh` → `claude -p`) runs the digest ~25 minutes before the user's 12:30 PM scrum standup (headroom for the run) — with no Claude Code session open. This replaced the original in-REPL `CronCreate` job `01e22275` (now retired: it required an open REPL and auto-expired after 7 days). The pilot currently covers **4 teammates** listed in `team.json` — identities live only in that git-ignored file, never in committed docs — before expanding to 8. See `README.md` for the overview and `RUNBOOK.md` for operating the automation.
 
 The observable signals each day: the **Google Chat** digest (a threaded set of cards in the Space) and a new row appended to the Google Sheet ("Vishwam - tracker"); each run also writes `logs/YYYY-MM-DD.log`. Read these to evaluate narrative quality, signal accuracy, and delivery reliability.
 

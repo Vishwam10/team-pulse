@@ -180,7 +180,7 @@ and troubleshooting steps are in **[`RUNBOOK.md`](RUNBOOK.md)**.
 
 ## Status & roadmap
 
-- **Pilot** — running for 2 teammates before expanding to 8. Validation gates
+- **Pilot** — running for 4 teammates before expanding to 8. Validation gates
   (identity accuracy, signal honesty, narrative usefulness, delivery reliability)
   are in [`CLAUDE.md`](CLAUDE.md).
 - **Scheduler** — ✅ **live on launchd** (`com.chronus.teampulse`, 12:05 IST); the

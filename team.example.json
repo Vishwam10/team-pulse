@@ -1,11 +1,21 @@
 [
   {
-    "name": "<FILL IN: Full Name>",
+    "name": "<FILL IN: Full Name — becomes sheet column B>",
     "github_login": "<FILL IN: github-handle>",
     "jira_account_id": "<FILL IN: Jira accountId (24-hex)>"
   },
   {
-    "name": "<FILL IN: Full Name>",
+    "name": "<FILL IN: Full Name — becomes sheet column C>",
+    "github_login": "<FILL IN: github-handle>",
+    "jira_account_id": "<FILL IN: Jira accountId (24-hex)>"
+  },
+  {
+    "name": "<FILL IN: Full Name — becomes sheet column D>",
+    "github_login": "<FILL IN: github-handle>",
+    "jira_account_id": "<FILL IN: Jira accountId (24-hex)>"
+  },
+  {
+    "name": "<FILL IN: Full Name — becomes sheet column E>",
     "github_login": "<FILL IN: github-handle>",
     "jira_account_id": "<FILL IN: Jira accountId (24-hex)>"
   }
